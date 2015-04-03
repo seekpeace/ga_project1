@@ -1,6 +1,6 @@
 require 'active_record'
 require 'pry'
-require_relative 'modelsv2'
+require_relative 'models'
 
 def babys_bottom
 	ActiveRecord::Base.connection.tables.each do |table|
@@ -24,16 +24,24 @@ end
 	case choice
 	when 1 #Current Balance 
 		puts "Your balance as of now"
+		sumtotal = Transact.sum(:amount)
 		ebalance = ebalance + Transact.sum(:amount)
 		puts "$#{ebalance}"
+		ebalance = ebalance - sumtotal #resets so the previous code doesn't keep accumulating
 	when 2 #View ALL Transactinos
 		# if Transact.all.empty?
 		# 	puts "There are no transactions"
 		# else
 			puts "Your Transaction History:"
 			Transact.all.each do |x|
-			puts "#ID: #{x.id} Payee: #{x.payee} $#{x.amount} Date:#{x.date} Category:#{x.category} balance:$#{ebalance}"
+			puts "#ID: #{x.id} To: #{x.payee} $#{x.amount} Date:#{x.date} Category:#{x.category}"
 			end
+			puts "======================"
+			puts "Your balance as of now"
+			sumtotal = Transact.sum(:amount)
+			ebalance = ebalance + Transact.sum(:amount)
+			puts "$#{ebalance}"
+			ebalance = ebalance - sumtotal #resets so the previous code doesn't keep accumulating
 #		end
 
 	when 3 #Add A Transaction
@@ -162,7 +170,7 @@ end
 			end
 			puts "Total for this categories is: $#{category_total}"	
 		else
-			puts ""
+			puts
 		end	
 
 	when 7
